@@ -31,6 +31,6 @@ export const endpoints = {
   roomById: (id) => `v1/room/rooms?id=${id}`,
   availability: (roomId, date) => `v1/availability/rooms/${roomId}/availability?date=${date}`,
   createBooking: "v1/booking/bookings",
-  bookingsByEmail: (email) => `v1/booking/bookings?email=${encodeURIComponent(email)}`,
+  bookingsByEmail: (email) => `v1/booking/bookings?email=${email}`,
   cancelBooking: (id) => `v1/booking/bookings/${id}/cancel`,
 };

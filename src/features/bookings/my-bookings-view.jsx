@@ -9,7 +9,7 @@ import { getBookingsByEmail } from "@/services/bookings";
 
 export function MyBookingsView() {
   const [email, setEmail] = useState("nia@company.com");
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState();
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -17,13 +17,15 @@ export function MyBookingsView() {
     event.preventDefault();
     setLoading(true);
     try {
-      const data = await getBookingsByEmail(email);
-      setBookings(data.map(toBookingRow));
+      const response = await getBookingsByEmail(email);
+      console.log("raw response", response);
+      setBookings(response);
       setSearched(true);
     } finally {
       setLoading(false);
     }
   };
+  console.log("bookings", bookings);
 
   return (
     <div className="space-y-6">
@@ -51,7 +53,7 @@ export function MyBookingsView() {
         <EmptyState title="No bookings for this email" description="Try another employee email or create a new room booking." />
       ) : (
         <div className="grid gap-4">
-          {bookings.map((booking) => (
+          {bookings?.map((booking) => (
             <Card key={booking.id} className="glass-panel rounded-2xl p-5">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                 <div>
