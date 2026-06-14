@@ -25,6 +25,7 @@ const request = async (endpoint, options = {}) => {
 export const Getdata = (endpoint) => request(endpoint, { method: "GET" });
 export const Postdata = (endpoint, payload) => request(endpoint, { method: "POST", body: JSON.stringify(payload) });
 export const Patchdata = (endpoint, payload) => request(endpoint, { method: "PATCH", body: JSON.stringify(payload || {}) });
+export const Deletedata = (endpoint) => request(endpoint, { method: "DELETE" });
 
 export const endpoints = {
   rooms: "v1/room/rooms",
@@ -32,5 +33,6 @@ export const endpoints = {
   availability: (roomId, date) => `v1/availability/rooms/${roomId}/availability?date=${date}`,
   createBooking: "v1/booking/bookings",
   bookingsByEmail: (email) => `v1/booking/bookings?email=${email}`,
-  cancelBooking: (id) => `v1/booking/bookings/${id}/cancel`,
+  cancelBooking: (id) => `v1/booking/bookings?id=${id}`,
+  rescheduleBooking: (id) => `v1/booking/bookings?id=${id}&action=reschedule`,
 };

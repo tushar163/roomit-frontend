@@ -1,5 +1,5 @@
 import { fallbackAvailability, fallbackBookings, fallbackRooms } from "@/lib/data";
-import { endpoints, Getdata, Patchdata, Postdata } from "@/services/service";
+import { Deletedata, endpoints, Getdata, Patchdata, Postdata } from "@/services/service";
 
 export async function getRooms() {
   try {
@@ -47,5 +47,10 @@ export async function getBookingsByEmail(email) {
 }
 
 export async function cancelBooking(id) {
-  return Patchdata(endpoints.cancelBooking(id));
+  console.log(id, "id")
+  return Deletedata(endpoints.cancelBooking(id));
+}
+
+export async function rescheduleBooking(id, payload) {
+  return Patchdata(endpoints.rescheduleBooking(id), payload);
 }
