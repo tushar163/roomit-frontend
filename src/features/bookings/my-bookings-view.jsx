@@ -32,7 +32,7 @@ export function MyBookingsView() {
       // Silent fail since this is just a refresh after an action
     }
   };
-
+console.log(bookings, "bookings")
   const isCancelled = (status) => status?.startsWith("cancelled");
 
   return (
@@ -91,8 +91,8 @@ export function MyBookingsView() {
                 {!isCancelled(booking.status) && (
                   <div className="flex flex-wrap gap-3">
                     <RescheduleModal
-                      bookingId={booking.id}
-                      roomId={booking.roomId}
+                      bookingId={booking._id}
+                      roomId={booking.room}
                       currentDate={booking.date}
                       onRescheduled={refreshBookings}
                     />

@@ -10,7 +10,6 @@ import { cancelBooking, getRoomAvailability, rescheduleBooking } from "@/service
 export function CancellationModal({ bookingId, onCancelled }) {
   const [loading, setLoading] = useState(false);
   const state = useOverlayState();
-  console.log(bookingId,"aasd")
   const handleCancel = async () => {
     setLoading(true);
     try {
@@ -33,7 +32,7 @@ export function CancellationModal({ bookingId, onCancelled }) {
 
       <Modal.Backdrop isOpen={state.isOpen} onOpenChange={state.setOpen}>
         <Modal.Container>
-          <Modal.Dialog className="glass-panel rounded-2xl sm:max-w-[420px]">
+          <Modal.Dialog className=" rounded-2xl sm:max-w-[420px]">
             <Modal.Header>
               <Modal.Icon>
                 <Trash2 className="size-5" />
@@ -62,8 +61,9 @@ export function CancellationModal({ bookingId, onCancelled }) {
 }
 
 
+
 export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled }) {
-  const state = useOverlayState();
+  const [isOpen, setIsOpen] = useState(false);
 
   const [date, setDate] = useState(currentDate || new Date().toISOString().slice(0, 10));
   const [availability, setAvailability] = useState([]);
@@ -71,9 +71,16 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
-  // Fetch availability whenever the modal is open and date changes
+  const open = () => {
+    setSelectedSlot(null);
+    setAvailability([]);
+    setDate(currentDate || new Date().toISOString().slice(0, 10));
+    setIsOpen(true);
+  };
+
+  // Fetch whenever modal is open AND date changes
   useEffect(() => {
-    if (!state.isOpen || !roomId) return;
+    if (!isOpen || !roomId) return;
 
     const fetchSlots = async () => {
       setSlotsLoading(true);
@@ -89,7 +96,7 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
     };
 
     fetchSlots();
-  }, [state.isOpen, roomId, date]);
+  }, [isOpen, roomId, date]); // roomId & date are primitives — stable deps
 
   const handleConfirm = async () => {
     if (!selectedSlot) return;
@@ -105,7 +112,7 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
         toast.success("Booking rescheduled", {
           description: `Moved to ${date} · ${selectedSlot.start}–${selectedSlot.end}`,
         });
-        state.close();
+        setIsOpen(false);
         onRescheduled?.();
       } else {
         toast.danger("Reschedule failed", { description: response?.message || "Please try again." });
@@ -132,14 +139,13 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
 
   return (
     <>
-      <Button variant="secondary" onPress={state.open}>
+      <Button variant="secondary" onPress={open}>
         <CalendarClock size={16} /> Reschedule
       </Button>
 
-      <Modal.Backdrop isOpen={state.isOpen} onOpenChange={state.setOpen}>
+      <Modal.Backdrop isOpen={isOpen} onOpenChange={setIsOpen}>
         <Modal.Container>
-          {/* Wide enough to comfortably fit the 6-col slot grid */}
-          <Modal.Dialog className="glass-panel rounded-2xl sm:max-w-[720px]">
+          <Modal.Dialog className=" rounded-2xl sm:max-w-[720px]">
             <Modal.Header>
               <Modal.Icon>
                 <CalendarClock className="size-5" />
@@ -153,48 +159,57 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
               <Modal.CloseTrigger />
             </Modal.Header>
 
-            <Modal.Body className="space-y-5">
-              {/* Date picker row */}
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-zinc-400 shrink-0">Date</span>
-                <Input
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  variant="bordered"
-                  className="max-w-44"
-                  aria-label="New date"
-                />
-              </div>
-
-              {/* Availability grid */}
-              {slotsLoading ? (
-                <div className="flex h-44 items-center justify-center">
-                  <Spinner size="md" />
-                </div>
-              ) : availability.length > 0 ? (
-                <AvailabilityGrid slots={availability} onSlotSelect={setSelectedSlot} />
-              ) : (
-                <p className="py-8 text-center text-sm text-zinc-500">
-                  No slots available for this date.
+            <Modal.Body className="space-y-5 max-h-[400px] overflow-auto">
+              {/* Missing roomId guard — surface the config error clearly in dev */}
+              {!roomId ? (
+                <p className="py-8 text-center text-sm text-rose-400">
+                  roomId is missing — make sure your booking object includes it.
                 </p>
-              )}
+              ) : (
+                <>
+                  {/* Date picker row */}
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-zinc-400 shrink-0">Date</span>
+                    <Input
+                      type="date"
+                      value={date}
+                      onChange={(e) => setDate(e.target.value)}
+                      variant="bordered"
+                      className="max-w-44"
+                      aria-label="New date"
+                    />
+                  </div>
 
-              {/* Selected slot summary pill */}
-              {selectedSlot && (
-                <div className="flex items-center gap-2 rounded-xl bg-violet-400/10 px-4 py-3 text-sm text-violet-300">
-                  <CalendarClock size={15} className="shrink-0" />
-                  <span>
-                    <span className="font-medium">{formattedDate}</span>
-                    {" · "}
-                    {selectedSlot.start}–{selectedSlot.end}
-                  </span>
-                </div>
+                  {/* Availability grid */}
+                  {slotsLoading ? (
+                    <div className="flex h-44 items-center justify-center">
+                      <Spinner size="md" />
+                    </div>
+                  ) : availability.length > 0 ? (
+                    <AvailabilityGrid slots={availability} onSlotSelect={setSelectedSlot} />
+                  ) : (
+                    <p className="py-8 text-center text-sm text-zinc-500">
+                      No slots available for this date.
+                    </p>
+                  )}
+
+                  {/* Selected slot summary pill */}
+                  {selectedSlot && (
+                    <div className="flex items-center gap-2 rounded-xl bg-violet-400/10 px-4 py-3 text-sm text-violet-300">
+                      <CalendarClock size={15} className="shrink-0" />
+                      <span>
+                        <span className="font-medium">{formattedDate}</span>
+                        {" · "}
+                        {selectedSlot.start}–{selectedSlot.end}
+                      </span>
+                    </div>
+                  )}
+                </>
               )}
             </Modal.Body>
 
             <Modal.Footer>
-              <Button variant="ghost" onPress={state.close} isDisabled={submitLoading}>
+              <Button variant="ghost" onPress={() => setIsOpen(false)} isDisabled={submitLoading}>
                 Close
               </Button>
               <Button

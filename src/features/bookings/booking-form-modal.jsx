@@ -133,7 +133,7 @@ export function BookingFormModal({
 
       <Modal.Backdrop isOpen={state.isOpen} onOpenChange={state.setOpen}>
         <Modal.Container>
-          <Modal.Dialog className="glass-panel rounded-2xl sm:max-w-[540px]">
+          <Modal.Dialog className=" rounded-2xl sm:max-w-[540px]">
             <Modal.Header>
               <Modal.Icon>
                 <CalendarCheck2 className="size-5" />
