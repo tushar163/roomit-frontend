@@ -60,12 +60,7 @@ export function AppShell({ children }) {
         })}
       </nav>
 
-      <Card className="glass-panel mt-auto rounded-2xl p-4">
-        <div className="text-sm font-semibold">Smart scheduling</div>
-        <p className="mt-2 text-xs leading-5 text-zinc-500 dark:text-zinc-400">
-          Conflict detection, buffers, and room utilization insights are ready for API wiring.
-        </p>
-      </Card>
+      
     </aside>
   );
 

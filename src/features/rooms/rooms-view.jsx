@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Chip, Input } from "@heroui/react";
+import { Button, Card, Chip, Input ,toast } from "@heroui/react";
 import { Search, Users, Clock, Building2, CalendarDays } from "lucide-react";
 // import { BookingFormModal } from "@/features/bookings/booking-form-modal";
 import { useEffect, useState } from "react";
@@ -30,9 +30,31 @@ export function RoomsView() {
     const fetchRooms = async () => {
       try {
         const data = await getRooms();
-        setRooms(data);
+        if (data) {
+          toast.success("Rooms loaded successfully!",{
+            actionProps: {
+              children: "View",
+              className:"bg-success text-success-foreground hover:bg-success/90",
+            },
+            description: "All available rooms have been fetched.",
+          });
+          setRooms(data);
+        } else {
+          toast.error("Failed to load rooms. Please try again later.", {
+            actionProps: {
+              children: "Retry",
+              className:"bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            }
+          });
+        }
       } catch (error) {
         console.error("Error fetching rooms:", error);
+        toast.error("An error occurred while fetching rooms.", {
+          actionProps: {
+            children: "Retry",
+            className:"bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          }
+        });
       } finally {
         setLoading(false);
       }

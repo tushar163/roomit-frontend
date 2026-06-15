@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Card, Chip, Input } from "@heroui/react";
+import { Button, Card, Chip, Input, toast } from "@heroui/react";
 import { useState } from "react";
 import { EmptyState } from "@/components/ui/state-panels";
 import { CancellationModal, RescheduleModal } from "@/features/bookings/booking-action-modals";
@@ -17,8 +17,17 @@ export function MyBookingsView() {
     setLoading(true);
     try {
       const response = await getBookingsByEmail(email);
-      setBookings(response);
-      setSearched(true);
+      if (response) {
+        toast.success("Bookings loaded successfully!", {
+          actionProps: {
+            children: "View",
+            className: "bg-success text-success-foreground hover:bg-success/90",
+          },
+          description: `Found ${response.length} bookings for ${email}.`,
+        });
+        setBookings(response);
+        setSearched(true);
+      }
     } finally {
       setLoading(false);
     }
@@ -27,12 +36,20 @@ export function MyBookingsView() {
   const refreshBookings = async () => {
     try {
       const response = await getBookingsByEmail(email);
-      setBookings(response);
+      if (response) {
+        toast.success("Bookings refreshed!", {
+          actionProps: {
+            children: "View",
+            className: "bg-success text-success-foreground hover:bg-success/90",
+          },
+          description: `Latest bookings for ${email} have been loaded.`,
+        });
+        setBookings(response);
+      }
     } catch {
       // Silent fail since this is just a refresh after an action
     }
   };
-console.log(bookings, "bookings")
   const isCancelled = (status) => status?.startsWith("cancelled");
 
   return (

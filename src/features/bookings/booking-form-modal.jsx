@@ -24,6 +24,7 @@ export function BookingFormModal({
   triggerLabel = "Book room",
   date = "",
   selectedSlot = null,
+  onBookingSuccess ,
 }) {
   const [formData, setFormData] = useState({ ...emptyForm });
   const [errors, setErrors] = useState({});
@@ -84,9 +85,20 @@ export function BookingFormModal({
         state.close();
         setFormData({ ...emptyForm });
         setErrors({});
-        toast.success("Room booked", { description: `${roomName} is reserved.` });
+        toast.success("Room booked", {
+          actionProps: {
+            children: "View",
+            className: "bg-success text-success-foreground hover:bg-success/90",
+          },
+          description: `${roomName} is reserved.`
+        });
+        onBookingSuccess(true);
       } else {
         toast.danger("Booking failed", {
+          actionProps: {
+            children: "Retry",
+            className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          },
           description: response?.message || "Please try again.",
         });
       }
@@ -95,9 +107,16 @@ export function BookingFormModal({
         error.status === 409
           ? "That slot was just booked by another user."
           : error.message || "Please try again.";
-      toast.danger("Booking failed", { description });
+      toast.danger("Booking failed", {
+        actionProps: {
+          children: "Retry",
+          className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+        },
+        description
+      });
     } finally {
       setLoading(false);
+      // onBookingSuccess(false);
     }
   };
 

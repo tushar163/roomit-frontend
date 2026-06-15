@@ -11,8 +11,8 @@ export function AppProviders({ children }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
       <QueryClientProvider client={queryClient}>
+        <Toast.Provider placement="bottom end" />
         {children}
-        <Toast.Provider placement="bottom-right" />
       </QueryClientProvider>
     </ThemeProvider>
   );

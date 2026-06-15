@@ -14,11 +14,23 @@ export function CancellationModal({ bookingId, onCancelled }) {
     setLoading(true);
     try {
       const response = await cancelBooking(bookingId);
-      toast.success(response?.message || "Booking cancelled");
+      toast.success(response?.message || "Booking cancelled", {
+        actionProps: {
+          children: "View",
+          className: "bg-success text-success-foreground hover:bg-success/90",
+        },
+        description: "Check your email for refund details if applicable.",
+      });
       state.close();
       onCancelled?.();
     } catch (error) {
-      toast.danger("Cancel failed", { description: error.message || "Please try again." });
+      toast.danger("Cancel failed", {
+        actionProps: {
+          children: "View",
+          className: "bg-danger text-danger-foreground hover:bg-danger/90",
+        },
+        description: error.message || "Please try again."
+      });
     } finally {
       setLoading(false);
     }
@@ -62,12 +74,12 @@ export function CancellationModal({ bookingId, onCancelled }) {
 
 
 
-export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled }) {
+export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled ,slot }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [date, setDate] = useState(currentDate || new Date().toISOString().slice(0, 10));
   const [availability, setAvailability] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState(slot);
   const [slotsLoading, setSlotsLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -87,7 +99,23 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
       setSelectedSlot(null);
       try {
         const data = await getRoomAvailability(roomId, date);
-        setAvailability(data);
+        if (data) {
+          toast.success("Availability loaded!", {
+            actionProps: {
+              children: "View",
+              className: "bg-success text-success-foreground hover:bg-success/90",
+            },
+            description: `Available slots for ${date} have been fetched.`,
+          });
+          setAvailability(data);
+        } else {
+          toast.error("Failed to load availability. Please try again later.", {
+            actionProps: {
+              children: "Retry",
+              className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            }
+          });
+        }
       } catch {
         toast.danger("Failed to load slots", { description: "Check your connection and try again." });
       } finally {
@@ -110,6 +138,10 @@ export function RescheduleModal({ bookingId, roomId, currentDate, onRescheduled 
 
       if (response?.success) {
         toast.success("Booking rescheduled", {
+          actionProps: {
+            children: "View",
+            className: "bg-success text-success-foreground hover:bg-success/90",
+          },
           description: `Moved to ${date} · ${selectedSlot.start}–${selectedSlot.end}`,
         });
         setIsOpen(false);

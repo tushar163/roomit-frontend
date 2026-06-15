@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, Chip, Input } from "@heroui/react";
+import { Card, Chip, Input, toast } from "@heroui/react";
 import { Monitor, Users, Wifi } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { AvailabilityGrid } from "@/features/availability/availability-grid";
@@ -15,24 +15,50 @@ export function RoomDetailView({ id }) {
   const [availability, setAvailability] = useState([]);
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [loading, setLoading] = useState(true);
-
-  // { start: "09:00", end: "09:30" } — kept in sync by AvailabilityGrid
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
-
+  console.log(isFormSubmitted, "isFormSubmitted")
   useEffect(() => {
     const fetchRoomDetails = async () => {
       setLoading(true);
-      // Reset slot whenever date changes so stale times don't carry over
       setSelectedSlot(null);
       try {
         const [roomData, availabilityData] = await Promise.all([
           getRoomById(id),
           getRoomAvailability(id, date),
         ]);
-        setRoom(roomData);
-        setAvailability(availabilityData);
+        if (roomData) {
+          toast.success("Room details loaded successfully!", {
+            actionProps: {
+              children: "View",
+              className: "bg-success text-success-foreground hover:bg-success/90",
+            },
+            description: `Details for ${roomData.name} have been fetched.`,
+          });
+          setRoom(roomData);
+        } else {
+          toast.error("Failed to load room details.");
+        }
+        if (availabilityData) {
+          toast.success("Availability data loaded successfully!", {
+            actionProps: {
+              children: "View",
+              className: "bg-success text-success-foreground hover:bg-success/90",
+            },
+            description: `Availability for ${roomData.name} has been fetched.`,
+          });
+          setAvailability(availabilityData);
+        } else {
+          toast.error("Failed to load availability data.");
+        }
       } catch (error) {
         console.error("Error fetching room details:", error);
+        toast.error("An error occurred while fetching room details.", {
+          actionProps: {
+            children: "Retry",
+            className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          }
+        });
       } finally {
         setLoading(false);
       }
@@ -150,7 +176,9 @@ export function RoomDetailView({ id }) {
               date={date}
               selectedSlot={selectedSlot}
               triggerLabel="Reserve this room"
+              onBookingSuccess={setIsFormSubmitted}
             />
+
           </div>
         </Card>
       </section>
