@@ -155,7 +155,6 @@ export function RoomsView() {
                 <Button variant="secondary" className="flex-1" onClick={() => router.push(`/rooms/${room._id}`)}>
                   Details
                 </Button>
-                {/* <BookingFormModal roomId={room._id} roomName={room.name} /> */}
               </div>
             </div>
           </Card>

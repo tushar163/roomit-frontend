@@ -28,6 +28,7 @@ export const Patchdata = (endpoint, payload) => request(endpoint, { method: "PAT
 export const Deletedata = (endpoint) => request(endpoint, { method: "DELETE" });
 export const Putdata = (endpoint, payload) => request(endpoint, { method: "PUT", body: JSON.stringify(payload) });
 
+
 export const endpoints = {
   rooms: "v1/room/rooms",
   roomById: (id) => `v1/room/rooms?id=${id}`,
@@ -36,4 +37,5 @@ export const endpoints = {
   bookingsByEmail: (email) => `v1/booking/bookings?email=${email}`,
   cancelBooking: (id) => `v1/booking/bookings?id=${id}`,
   rescheduleBooking: (id) => `v1/booking/bookings?id=${id}`,
+  dashboardMetrics: (availabilityRoomId, availabilityDate, bookingLimit) => `v1/dashboard/metrics?availabilityRoomId=${availabilityRoomId}&availabilityDate=${availabilityDate}&bookingLimit=${bookingLimit}`,
 };

@@ -5,11 +5,32 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, CalendarDays, Clock3 } from "lucide-react";
 import { BookingTable } from "@/components/ui/booking-table";
 import { MetricCard } from "@/components/ui/metric-card";
-import { fallbackBookings, fallbackRooms, metrics, toBookingRow } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { getDashboardMetrics } from "@/services/bookings";
+// import { fallbackBookings, fallbackRooms, metrics, toBookingRow } from "@/lib/data";
 
 export function DashboardView() {
-  const rooms = fallbackRooms;
-  const bookings = fallbackBookings.map(toBookingRow);
+  const [rooms, setRooms] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [metrics, setMetrics] = useState([]);
+  const [availabilityRoomId, setAvailabilityRoomId] = useState("");
+  const [availabilityDate, setAvailabilityDate] = useState();
+  const [bookingLimit, setBookingLimit] = useState(10);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await getDashboardMetrics(availabilityRoomId, availabilityDate, bookingLimit);
+        setRooms(response.rooms || []);
+        setBookings((response.bookings || []).map(toBookingRow));
+        setMetrics(response.metrics || []);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, [availabilityRoomId, availabilityDate, bookingLimit]);
 
   return (
     <div className="space-y-6">
