@@ -28,7 +28,7 @@ export function AppShell({ children }) {
   }, []);
 
   const sidebar = (
-    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-white/10 bg-white/70 px-4 py-5 backdrop-blur-2xl dark:bg-black/35">
+    <aside className="flex h-full w-[min(18rem,86vw)] shrink-0 flex-col border-r border-white/10 bg-white/80 px-4 py-5 backdrop-blur-2xl dark:bg-black/75 lg:w-72 lg:bg-white/70 lg:dark:bg-black/35">
       <Link href="/" className="flex items-center gap-3 px-2">
         <span className="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-cyan-400 text-white shadow-lg shadow-violet-500/20">
           <Sparkles size={20} />
@@ -67,7 +67,7 @@ export function AppShell({ children }) {
   return (
     <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
       <div className="soft-grid pointer-events-none absolute inset-0 opacity-60" />
-      <div className="pointer-events-none absolute left-1/2 top-0 h-80 w-[42rem] -translate-x-1/2 rounded-full bg-violet-500/15 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-64 w-[22rem] -translate-x-1/2 rounded-full bg-violet-500/15 blur-3xl sm:h-80 sm:w-[42rem]" />
       <div className="relative flex min-h-screen">
         <div className="hidden lg:block">{sidebar}</div>
 
@@ -115,7 +115,7 @@ export function AppShell({ children }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.24, ease: "easeOut" }}
-              className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8"
+              className="mx-auto w-full max-w-7xl flex-1 px-3 py-4 sm:px-6 sm:py-6 lg:px-8"
             >
               {children}
             </motion.main>
@@ -125,12 +125,12 @@ export function AppShell({ children }) {
 
       <AnimatePresence>
         {searchOpen && (
-          <motion.div className="fixed inset-0 z-[60] grid place-items-start bg-black/55 px-4 pt-24 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div className="fixed inset-0 z-[60] grid place-items-start bg-black/55 px-3 pt-16 backdrop-blur-sm sm:px-4 sm:pt-24" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div initial={{ scale: 0.96, y: -12 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.96, y: -12 }} className="mx-auto w-full max-w-2xl">
               <Card className="glass-panel rounded-2xl p-3">
                 <div className="flex items-center gap-2">
                   <Search size={18} className="ml-2 text-zinc-400" />
-                  <Input autoFocus placeholder="Search Aurora, cancelled bookings, 10 AM slots..." className="flex-1 border-0 bg-transparent shadow-none" />
+                  <Input autoFocus placeholder="Search rooms or bookings..." className="min-w-0 flex-1 border-0 bg-transparent shadow-none" />
                   <Button isIconOnly variant="ghost" onPress={() => setSearchOpen(false)} aria-label="Close search">
                     <X size={18} />
                   </Button>

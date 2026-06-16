@@ -57,7 +57,7 @@ export async function rescheduleBooking(id, payload) {
 
 export async function getDashboardMetrics(availabilityRoomId, availabilityDate, bookingLimit) {
   try {
-    const response = await Getdata(endpoints.dashboardMetrics(availabilityRoomId, availabilityDate, bookingLimit));
+    const response = await Getdata(endpoints.dashboardMetrics({ availabilityRoomId, availabilityDate, bookingLimit }));
     return response.data || {};
   } catch (error) {
     console.warn("Using static dashboard metrics fallback:", error.message);

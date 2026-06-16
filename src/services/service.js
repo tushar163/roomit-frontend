@@ -34,8 +34,15 @@ export const endpoints = {
   roomById: (id) => `v1/room/rooms?id=${id}`,
   availability: (roomId, date) => `v1/availability/rooms/${roomId}/availability?date=${date}`,
   createBooking: "v1/booking/bookings",
-  bookingsByEmail: (email) => `v1/booking/bookings?email=${email}`,
+  bookingsByEmail: (email) => `v1/booking/bookings?email=${encodeURIComponent(email)}`,
   cancelBooking: (id) => `v1/booking/bookings?id=${id}`,
   rescheduleBooking: (id) => `v1/booking/bookings?id=${id}`,
-  dashboardMetrics: (availabilityRoomId, availabilityDate, bookingLimit) => `v1/dashboard/metrics?availabilityRoomId=${availabilityRoomId}&availabilityDate=${availabilityDate}&bookingLimit=${bookingLimit}`,
+  dashboardMetrics: ({ availabilityRoomId, availabilityDate, bookingLimit } = {}) => {
+    const query = new URLSearchParams();
+    if (availabilityRoomId) query.set("availabilityRoomId", availabilityRoomId);
+    if (availabilityDate) query.set("availabilityDate", availabilityDate);
+    if (bookingLimit) query.set("bookingLimit", String(bookingLimit));
+    const suffix = query.toString();
+    return `v1/dashboard${suffix ? `?${suffix}` : ""}`;
+  },
 };

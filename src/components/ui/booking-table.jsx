@@ -2,9 +2,9 @@ import { Chip, Table } from "@heroui/react";
 
 export function BookingTable({ bookings }) {
   return (
-    <Table className="rounded-2xl">
-      <Table.ScrollContainer>
-        <Table.Content aria-label="Recent bookings">
+    <Table className="min-w-0 rounded-2xl">
+      <Table.ScrollContainer className="overflow-x-auto">
+        <Table.Content aria-label="Recent bookings" className="min-w-[720px]">
           <Table.Header>
             <Table.Column isRowHeader>Booking</Table.Column>
             <Table.Column>Room</Table.Column>
@@ -23,7 +23,7 @@ export function BookingTable({ bookings }) {
                 <Table.Cell>{booking.host}</Table.Cell>
                 <Table.Cell>{booking.date}, {booking.time}</Table.Cell>
                 <Table.Cell>
-                  <Chip variant={booking.status === "cancelled" ? "danger" : "success"}>{booking.status}</Chip>
+                  <Chip variant={booking.status?.startsWith("cancelled") ? "danger" : "success"}>{booking.status}</Chip>
                 </Table.Cell>
               </Table.Row>
             )}

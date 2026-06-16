@@ -1,9 +1,8 @@
 "use client";
 
-import { Button, Card, Chip, Input ,toast } from "@heroui/react";
+import { Button, Card, Chip, Input, toast } from "@heroui/react";
 import { Search, Users, Clock, Building2, CalendarDays } from "lucide-react";
-// import { BookingFormModal } from "@/features/bookings/booking-form-modal";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getRooms } from "@/services/bookings";
 import { useRouter } from "next/navigation";
 
@@ -26,39 +25,35 @@ export function RoomsView() {
   const router = useRouter();
 
 
+  const hasFetched = useRef(false); // ← guards against Strict Mode double-invoke
+
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchRooms = async () => {
       try {
         const data = await getRooms();
         if (data) {
-          toast.success("Rooms loaded successfully!",{
+          setRooms(data);
+          toast.success("Rooms loaded successfully!", {
             actionProps: {
               children: "View",
-              className:"bg-success text-success-foreground hover:bg-success/90",
+              className: "bg-success text-success-foreground hover:bg-success/90",
             },
-            description: "All available rooms have been fetched.",
+            description: `We've fetched ${data.length} rooms for you.`,
           });
-          setRooms(data);
         } else {
-          toast.error("Failed to load rooms. Please try again later.", {
-            actionProps: {
-              children: "Retry",
-              className:"bg-destructive text-destructive-foreground hover:bg-destructive/90",
-            }
-          });
+          toast.error("Failed to load rooms. Please try again.");
         }
       } catch (error) {
         console.error("Error fetching rooms:", error);
-        toast.error("An error occurred while fetching rooms.", {
-          actionProps: {
-            children: "Retry",
-            className:"bg-destructive text-destructive-foreground hover:bg-destructive/90",
-          }
-        });
+        toast.error("An error occurred while fetching rooms.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchRooms();
   }, []);
 

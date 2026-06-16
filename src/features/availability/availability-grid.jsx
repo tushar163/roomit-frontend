@@ -25,13 +25,11 @@ export function AvailabilityGrid({ slots, onSlotSelect }) {
   const firstAvailable = normalizedSlots.find((slot) => slot.state === "available") ?? null;
   const [selected, setSelected] = useState(firstAvailable?.time ?? null);
 
-  // Emit the first available slot on mount so the parent is always in sync
   useEffect(() => {
     if (firstAvailable) {
       onSlotSelect?.({ start: firstAvailable.time, end: firstAvailable.end });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // only on mount
+  }, []);
 
   const handleSelect = (slot) => {
     setSelected(slot.time);
@@ -45,8 +43,8 @@ export function AvailabilityGrid({ slots, onSlotSelect }) {
         <Legend color="bg-rose-400" label="Booked" />
         <Legend color="bg-amber-400" label="Buffer" />
       </div>
-      <div className="overflow-x-auto pb-2">
-        <div className="grid min-w-[760px] grid-cols-6 gap-3 md:min-w-0 p-4">
+      <div className="-mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+        <div className="grid min-w-[680px] grid-cols-6 gap-2 p-1 sm:gap-3 md:min-w-0 md:p-2">
           {normalizedSlots.map((slot) => (
             <motion.div
               key={slot.time}
@@ -58,13 +56,13 @@ export function AvailabilityGrid({ slots, onSlotSelect }) {
                 isDisabled={slot.state !== "available"}
                 onPress={() => handleSelect(slot)}
                 className={cn(
-                  "h-20 flex-col rounded-2xl border text-left shadow-none transition",
+                  "h-16 flex-col rounded-xl border text-left shadow-none transition sm:h-20 sm:rounded-2xl",
                   stateClass[slot.state],
                   selected === slot.time && "ring-2 ring-violet-400 ring-offset-2 ring-offset-background",
                 )}
               >
-                <span className="text-sm font-semibold">{slot.time}</span>
-                <span className="text-xs opacity-80">{slot.end ? `${slot.end} · ${slot.label}` : slot.label}</span>
+                <span className="text-xs font-semibold sm:text-sm">{slot.time}</span>
+                <span className="text-[11px] opacity-80 sm:text-xs">{slot.end ? `${slot.end} · ${slot.label}` : slot.label}</span>
               </Button>
             </motion.div>
           ))}
